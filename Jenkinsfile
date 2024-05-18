@@ -13,14 +13,17 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Configurar la autenticación con Google Cloud
-                    sh 'gcloud auth activate-service-account --key-file=$GCLOUD_CREDS'
+                    // Cambiar al directorio 'server'
+                    dir('server') {
+                        // Configurar la autenticación con Google Cloud
+                        sh 'gcloud auth activate-service-account --key-file=$GCLOUD_CREDS'
 
-                    // Configurar el proyecto de Google Cloud
-                    sh 'gcloud config set project $PROJECT_ID'
+                        // Configurar el proyecto de Google Cloud
+                        sh 'gcloud config set project $PROJECT_ID'
 
-                    // Construir la imagen de la aplicación
-                    sh 'gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME'
+                        // Construir la imagen de la aplicación
+                        sh 'gcloud builds submit --tag gcr.io/$PROJECT_ID/$SERVICE_NAME'
+                    }
                 }
             }
         }
@@ -28,14 +31,17 @@ pipeline {
         stage('Deploy to Cloud Run') {
             steps {
                 script {
-                    // Desplegar la imagen en Cloud Run
-                    sh '''
-                    gcloud run deploy $SERVICE_NAME \
-                        --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
-                        --region $REGION \
-                        --platform managed \
-                        --allow-unauthenticated
-                    '''
+                    // Cambiar al directorio 'server'
+                    dir('server') {
+                        // Desplegar la imagen en Cloud Run
+                        sh '''
+                        gcloud run deploy $SERVICE_NAME \
+                            --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
+                            --region $REGION \
+                            --platform managed \
+                            --allow-unauthenticated
+                        '''
+                    }
                 }
             }
         }
