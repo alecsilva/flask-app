@@ -32,7 +32,7 @@ pipeline {
                 script {
                     // Desplegar a Firebase
                     sh '''
-                    firebase deploy --only hosting --token=$GOOGLE_APPLICATION_CREDENTIALS
+                    firebase deploy --only hosting --key-file=$GOOGLE_APPLICATION_CREDENTIALS
                     '''
                 }
             }
