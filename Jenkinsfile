@@ -6,7 +6,7 @@ pipeline {
         CLOUDSDK_CORE_PROJECT = 'flask-app-4cb7e'
         SERVICE_NAME = 'flask-fire'
         REGION = 'us-east1'
-        GCLOUD_CREDS = credentials('gcloud-creds')
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcloud-creds')
     }
 
     stages {
@@ -16,7 +16,7 @@ pipeline {
                     // Cambiar al directorio 'server'
                     dir('server') {
                         // Configurar la autenticación con Google Cloud
-                        sh 'gcloud auth activate-service-account --key-file=$GCLOUD_CREDS'
+                        sh 'gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS'
 
                         // Configurar el proyecto de Google Cloud
                         sh 'gcloud config set project $PROJECT_ID'
@@ -50,7 +50,10 @@ pipeline {
             steps {
                 script {
                     // Desplegar a Firebase
-                    sh 'firebase deploy --only hosting'
+                    sh '''
+                    env.GOOGLE_APPLICATION_CREDENTIALS = GOOGLE_APPLICATION_CREDENTIALS
+                    firebase deploy --only hosting
+                    '''
                 }
             }
         }
